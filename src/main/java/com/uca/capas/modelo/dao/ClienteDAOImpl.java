@@ -224,5 +224,45 @@ public class ClienteDAOImpl implements ClienteDAO {
 		Object[] parametros  = new Object[] {c.getSnombres(), c.getSapellidos(), c.getFnacimiento(), c.getBactivo()};
 		jdbcTemplate.update(sql, parametros);
 	}
-	
+
+	@Override
+	public int ejecutarProcedimientoJdbc(Integer cliente, Boolean estado) {
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withSchemaName("store").withProcedureName("sp_actualizar_cliente")
+				.withoutProcedureColumnMetaDataAccess();
+		
+		jdbcCall.addDeclaredParameter(new SqlParameter("P_CLIENTE", Types.INTEGER));
+		jdbcCall.addDeclaredParameter(new SqlParameter("P_ESTADO", Types.BOOLEAN));
+		jdbcCall.addDeclaredParameter(new SqlOutParameter("P_SALIDA", Types.INTEGER));
+		
+		Map<String, Object> parametros = new HashMap<>();
+		parametros.put("P_CLIENTE", cliente);
+		parametros.put("P_ESTADO", estado);
+		
+		Map<String, Object> out = jdbcCall.execute(parametros);
+		
+		return Integer.parseInt(out.get("P_SALIDA").toString());
+	}
+
+	@Override
+	public int[][] batchInsertVehiculos(List<Vehiculo> vehiculos) {
+		String sql = "INSERT INTO store.vehiculo " +
+				"(c_vehiculo, s_marca, s_modelo,s_chassis, f_compra, b_estado, c_cliente) VALUES (?,?,?,?,?,?,?)";
+		
+		int [][] resultado = jdbcTemplate.batchUpdate(sql, vehiculos, 1000, new ParameterizedPreparedStatementSetter<Vehiculo>() {
+			
+			@Override
+			public void setValues(PreparedStatement ps, Vehiculo v) throws SQLException{
+				ps.setInt(1, v.getCvehiculo());
+				ps.setString(2, v.getSmarca());
+				ps.setString(3, v.getSmodelo());
+				ps.setString(4, v.getSchassis());
+				java.sql.Date fcompra = new java.sql.Date(v.getFcompra().getTime().getTime());
+				ps.setDate(5, fcompra);
+				ps.setBoolean(6, v.getBestado());
+				ps.setInt(7, v.getCcliente());
+			}
+		});
+		return resultado;
+	}
 }

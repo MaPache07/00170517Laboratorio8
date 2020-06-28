@@ -13,6 +13,8 @@ public interface ClienteDAO {
 	
 	public void updateCliente(Cliente c);
 	
+	public int ejecutarProcedimientoJdbc(Integer cliente, Boolean estado);
+	
 	public List<Cliente> findAll() throws DataAccessException;
 	
 	public Cliente findOne(Integer codigo) throws DataAccessException;
@@ -26,4 +28,6 @@ public interface ClienteDAO {
 	public List<Cliente> getClientesMarcaVehiculo(String marca);
 
 	public List<Cliente> getClientesFechaEstado(Calendar fecha, Boolean estado);
+	
+	public int[][] batchInsertVehiculos(final List<Vehiculo> vehiculos);
 }
