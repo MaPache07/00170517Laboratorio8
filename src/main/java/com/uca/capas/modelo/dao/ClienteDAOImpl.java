@@ -221,7 +221,7 @@ public class ClienteDAOImpl implements ClienteDAO {
 
 	@Override
 	public void updateCliente(Cliente c) {
-		Object[] parametros  = new Object[] {c.getSnombres(), c.getSapellidos(), c.getFnacimiento(), c.getBactivo()};
+		Object[] parametros  = new Object[] {c.getSnombres(), c.getSapellidos(), c.getFnacimiento(), c.getBactivo(), c.getCcliente()};
 		jdbcTemplate.update(sql, parametros);
 	}
 
